@@ -1,5 +1,6 @@
 {
   "name": "fincontrol-pro",
+  "homepage": "https://alexmetaloide.github.io/Financ2",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist" 
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "lucide-react": "^0.554.0",
