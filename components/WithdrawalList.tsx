@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Withdrawal, WithdrawalCategory } from '../types';
 import { formatCurrency, formatDate, generateId } from '../utils';
 import { Plus, Trash2, Search, Filter } from 'lucide-react';
+import { useCurrencyInput } from '../hooks/useCurrencyInput';
 
 interface WithdrawalListProps {
     withdrawals: Withdrawal[];
@@ -16,13 +17,13 @@ export const WithdrawalList: React.FC<WithdrawalListProps> = ({ withdrawals, onA
 
     // Form State
     const [description, setDescription] = useState('');
-    const [value, setValue] = useState('');
+    const currencyInput = useCurrencyInput(0);
     const [date, setDate] = useState('');
     const [category, setCategory] = useState<WithdrawalCategory>(WithdrawalCategory.OPERATIONAL);
 
     const resetForm = () => {
         setDescription('');
-        setValue('');
+        currencyInput.setValue(0);
         setDate('');
         setCategory(WithdrawalCategory.OPERATIONAL);
     };
@@ -33,7 +34,7 @@ export const WithdrawalList: React.FC<WithdrawalListProps> = ({ withdrawals, onA
         const withdrawalData: Withdrawal = {
             id: generateId(),
             description,
-            value: Number(value),
+            value: currencyInput.numericValue,
             date,
             category,
         };
@@ -172,14 +173,14 @@ export const WithdrawalList: React.FC<WithdrawalListProps> = ({ withdrawals, onA
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Valor (R$)</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Valor</label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     required
-                                    step="0.01"
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
-                                    value={value}
-                                    onChange={(e) => setValue(e.target.value)}
+                                    value={currencyInput.displayValue}
+                                    onChange={(e) => currencyInput.handleChange(e.target.value)}
+                                    placeholder="R$ 0,00"
                                 />
                             </div>
                             <div>

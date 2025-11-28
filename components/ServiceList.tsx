@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Service, ServiceStatus } from '../types';
 import { formatCurrency, formatDate, generateId } from '../utils';
 import { Plus, Trash2, Edit2, Search, Filter } from 'lucide-react';
+import { useCurrencyInput } from '../hooks/useCurrencyInput';
 
 interface ServiceListProps {
     services: Service[];
@@ -19,7 +20,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({ services, onAdd, onEdi
     // Form State
     const [client, setClient] = useState('');
     const [description, setDescription] = useState('');
-    const [value, setValue] = useState('');
+    const currencyInput = useCurrencyInput(0);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [status, setStatus] = useState<ServiceStatus>(ServiceStatus.PENDING);
@@ -27,7 +28,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({ services, onAdd, onEdi
     const resetForm = () => {
         setClient('');
         setDescription('');
-        setValue('');
+        currencyInput.setValue(0);
         setStartDate('');
         setEndDate('');
         setStatus(ServiceStatus.PENDING);
@@ -39,7 +40,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({ services, onAdd, onEdi
             setEditingService(service);
             setClient(service.client);
             setDescription(service.description);
-            setValue(service.value.toString());
+            currencyInput.setValue(service.value);
             setStartDate(service.startDate);
             setEndDate(service.endDate || '');
             setStatus(service.status);
@@ -56,7 +57,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({ services, onAdd, onEdi
             id: editingService ? editingService.id : generateId(),
             client,
             description,
-            value: Number(value),
+            value: currencyInput.numericValue,
             startDate,
             endDate: endDate || undefined,
             status,
@@ -223,14 +224,14 @@ export const ServiceList: React.FC<ServiceListProps> = ({ services, onAdd, onEdi
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Valor (R$)</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Valor</label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     required
-                                    step="0.01"
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                                    value={value}
-                                    onChange={(e) => setValue(e.target.value)}
+                                    value={currencyInput.displayValue}
+                                    onChange={(e) => currencyInput.handleChange(e.target.value)}
+                                    placeholder="R$ 0,00"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
