@@ -41,7 +41,17 @@ export function useServices(userId: string | undefined) {
         if (error) {
             console.error('Error fetching services:', error);
         } else {
-            setServices(data || []);
+            // Map DB columns back to frontend types
+            const mappedServices: Service[] = (data || []).map(item => ({
+                id: item.id,
+                client: item.client || '',
+                description: item.description || '',
+                value: item.value,
+                startDate: item.date, // Map 'date' back to 'startDate'
+                endDate: item.end_date, // Map 'end_date' back to 'endDate'
+                status: item.status || 'Pendente'
+            }));
+            setServices(mappedServices);
         }
         setLoading(false);
     }
@@ -49,9 +59,20 @@ export function useServices(userId: string | undefined) {
     async function addService(service: Omit<Service, 'id'>) {
         if (!userId) return;
 
+        // Map frontend types to DB columns
+        const dbService = {
+            user_id: userId,
+            client: service.client,
+            description: service.description,
+            value: service.value,
+            date: service.startDate, // Map 'startDate' to 'date'
+            end_date: service.endDate, // Map 'endDate' to 'end_date'
+            status: service.status
+        };
+
         const { error } = await supabase
             .from('services')
-            .insert({ ...service, user_id: userId });
+            .insert(dbService);
 
         if (error) {
             console.error('Error adding service:', error);
@@ -62,9 +83,18 @@ export function useServices(userId: string | undefined) {
     async function updateService(id: string, updates: Partial<Service>) {
         if (!userId) return;
 
+        // Map updates to DB columns
+        const dbUpdates: any = {};
+        if (updates.client !== undefined) dbUpdates.client = updates.client;
+        if (updates.description !== undefined) dbUpdates.description = updates.description;
+        if (updates.value !== undefined) dbUpdates.value = updates.value;
+        if (updates.startDate !== undefined) dbUpdates.date = updates.startDate;
+        if (updates.endDate !== undefined) dbUpdates.end_date = updates.endDate;
+        if (updates.status !== undefined) dbUpdates.status = updates.status;
+
         const { error } = await supabase
             .from('services')
-            .update(updates)
+            .update(dbUpdates)
             .eq('id', id)
             .eq('user_id', userId);
 
@@ -130,7 +160,15 @@ export function useWithdrawals(userId: string | undefined) {
         if (error) {
             console.error('Error fetching withdrawals:', error);
         } else {
-            setWithdrawals(data || []);
+            // Map DB columns to frontend types
+            const mappedWithdrawals: Withdrawal[] = (data || []).map(item => ({
+                id: item.id,
+                date: item.date,
+                description: item.description || '',
+                category: item.category || 'Outros',
+                value: item.value
+            }));
+            setWithdrawals(mappedWithdrawals);
         }
         setLoading(false);
     }
@@ -138,9 +176,17 @@ export function useWithdrawals(userId: string | undefined) {
     async function addWithdrawal(withdrawal: Omit<Withdrawal, 'id'>) {
         if (!userId) return;
 
+        const dbWithdrawal = {
+            user_id: userId,
+            date: withdrawal.date,
+            description: withdrawal.description,
+            category: withdrawal.category,
+            value: withdrawal.value
+        };
+
         const { error } = await supabase
             .from('withdrawals')
-            .insert({ ...withdrawal, user_id: userId });
+            .insert(dbWithdrawal);
 
         if (error) {
             console.error('Error adding withdrawal:', error);
