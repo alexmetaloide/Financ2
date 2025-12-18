@@ -1,71 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { Service, Withdrawal, TabType } from './types';
+import React, { useState } from 'react';
+import { TabType } from './types';
 import { Dashboard } from './components/Dashboard';
 import { ServiceList } from './components/ServiceList';
 import { WithdrawalList } from './components/WithdrawalList';
-import { LayoutDashboard, ArrowRightLeft } from 'lucide-react';
+import { LoginScreen } from './components/LoginScreen';
+import { LayoutDashboard, ArrowRightLeft, LogOut } from 'lucide-react';
+import { useAuth } from './hooks/useAuth';
+import { useServices, useWithdrawals } from './hooks/useSupabase';
 
 const App: React.FC = () => {
-  // --- State Management ---
+  const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
+  const { services, loading: servicesLoading, addService, updateService, deleteService } = useServices(user?.id);
+  const { withdrawals, loading: withdrawalsLoading, addWithdrawal, deleteWithdrawal } = useWithdrawals(user?.id);
+
   const [activeTab, setActiveTab] = useState<TabType>('services');
-  const [services, setServices] = useState<Service[]>([]);
-  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
 
-  // --- Persistence (LocalStorage) ---
-  
-  // Load data on mount
-  useEffect(() => {
-    const storedServices = localStorage.getItem('fincontrol_services');
-    const storedWithdrawals = localStorage.getItem('fincontrol_withdrawals');
+  // Loading state
+  if (authLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
-    if (storedServices) setServices(JSON.parse(storedServices));
-    if (storedWithdrawals) setWithdrawals(JSON.parse(storedWithdrawals));
-    
-    setIsLoaded(true);
-  }, []);
+  // Not authenticated - show login screen
+  if (!user) {
+    return <LoginScreen onLogin={signInWithGoogle} />;
+  }
 
-  // Save data on change (only after initial load)
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('fincontrol_services', JSON.stringify(services));
-    }
-  }, [services, isLoaded]);
+  // Loading data
+  if (servicesLoading || withdrawalsLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando seus dados...</p>
+        </div>
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('fincontrol_withdrawals', JSON.stringify(withdrawals));
-    }
-  }, [withdrawals, isLoaded]);
-
-  // --- Handlers ---
-
-  const handleAddService = (newService: Service) => {
-    setServices([...services, newService]);
-  };
-
-  const handleEditService = (updatedService: Service) => {
-    setServices(services.map(s => s.id === updatedService.id ? updatedService : s));
-  };
-
-  const handleDeleteService = (id: string) => {
-    if (window.confirm('Tem certeza que deseja excluir este serviço?')) {
-      setServices(services.filter(s => s.id !== id));
-    }
-  };
-
-  const handleAddWithdrawal = (newWithdrawal: Withdrawal) => {
-    setWithdrawals([...withdrawals, newWithdrawal]);
-  };
-
-  const handleDeleteWithdrawal = (id: string) => {
-    if (window.confirm('Tem certeza que deseja excluir esta retirada?')) {
-      setWithdrawals(withdrawals.filter(w => w.id !== id));
-    }
-  };
-
-  if (!isLoaded) return <div className="flex h-screen items-center justify-center">Carregando...</div>;
-
+  // Main app
   return (
     <div className="min-h-screen font-sans pb-12">
       {/* Header / Navbar */}
@@ -76,14 +55,35 @@ const App: React.FC = () => {
               <div className="bg-primary text-white p-1.5 rounded-lg">
                 <LayoutDashboard size={20} />
               </div>
-              <span className="text-xl font-bold text-gray-800 tracking-tight">FinControl<span className="text-primary">Pro</span></span>
+              <span className="text-xl font-bold text-gray-800 tracking-tight">
+                FinControl<span className="text-primary">Pro</span>
+              </span>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
+                  {user.email?.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-sm text-gray-600 max-w-[150px] truncate">
+                  {user.email}
+                </span>
+              </div>
+              <button
+                onClick={signOut}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                title="Sair"
+              >
+                <LogOut size={18} />
+                <span className="hidden sm:inline">Sair</span>
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+
         {/* Dashboard Section */}
         <Dashboard services={services} withdrawals={withdrawals} />
 
@@ -129,15 +129,15 @@ const App: React.FC = () => {
           {activeTab === 'services' ? (
             <ServiceList
               services={services}
-              onAdd={handleAddService}
-              onEdit={handleEditService}
-              onDelete={handleDeleteService}
+              onAdd={addService}
+              onEdit={updateService}
+              onDelete={deleteService}
             />
           ) : (
             <WithdrawalList
               withdrawals={withdrawals}
-              onAdd={handleAddWithdrawal}
-              onDelete={handleDeleteWithdrawal}
+              onAdd={addWithdrawal}
+              onDelete={deleteWithdrawal}
             />
           )}
         </div>
