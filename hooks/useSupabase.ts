@@ -77,6 +77,8 @@ export function useServices(userId: string | undefined) {
         if (error) {
             console.error('Error adding service:', error);
             alert('Erro ao adicionar serviço. Tente novamente.');
+        } else {
+            fetchServices();
         }
     }
 
@@ -101,6 +103,8 @@ export function useServices(userId: string | undefined) {
         if (error) {
             console.error('Error updating service:', error);
             alert('Erro ao atualizar serviço. Tente novamente.');
+        } else {
+            fetchServices();
         }
     }
 
@@ -116,6 +120,8 @@ export function useServices(userId: string | undefined) {
         if (error) {
             console.error('Error deleting service:', error);
             alert('Erro ao excluir serviço. Tente novamente.');
+        } else {
+            fetchServices();
         }
     }
 
@@ -191,6 +197,8 @@ export function useWithdrawals(userId: string | undefined) {
         if (error) {
             console.error('Error adding withdrawal:', error);
             alert('Erro ao adicionar retirada. Tente novamente.');
+        } else {
+            fetchWithdrawals();
         }
     }
 
@@ -206,6 +214,8 @@ export function useWithdrawals(userId: string | undefined) {
         if (error) {
             console.error('Error deleting withdrawal:', error);
             alert('Erro ao excluir retirada. Tente novamente.');
+        } else {
+            fetchWithdrawals();
         }
     }
 
