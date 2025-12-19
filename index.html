@@ -1,82 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#4F46E5" />
-  <meta name="description" content="Gerenciamento financeiro para serviços e retiradas." />
-  <link rel="manifest" href="/Financ2/assets/manifest-BXdvN305.json" />
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2344/2344146.png" />
-  <title>FinControl Pro</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            primary: '#4F46E5',
-            secondary: '#10B981',
-            danger: '#EF4444',
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    body {
-      background-color: #F3F4F6;
-    }
-
-    /* Estilos de carregamento para feedback imediato */
-    #root:empty {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      color: #4F46E5;
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-    }
-
-    #root:empty::after {
-      content: "Carregando FinControl Pro...";
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.5;
-      }
-    }
-  </style>
-
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
-    "recharts": "https://aistudiocdn.com/recharts@^3.4.1",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0"
-  }
-}
-</script>
-  <script type="module" crossorigin src="/Financ2/assets/index-DuRLDn5q.js"></script>
-</head>
-
-<body>
-  <div id="root"></div>
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0ea5e9" />
+    <meta name="description" content="FinControl Pro - Gerenciamento financeiro inteligente e simplificado" />
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/Financ2/manifest.json" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    
+    <title>FinControl Pro - Controle Financeiro</title>
+    <script type="module" crossorigin src="/Financ2/assets/index-Cpd0wNk1.js"></script>
+    <link rel="stylesheet" crossorigin href="/Financ2/assets/index-CZ2or5hi.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
